@@ -2,6 +2,7 @@ const { Client, Intents } = require('discord.js'),
     songQueue = new Map(),
     dotenv = require('dotenv'),
     BaseMessageReciever = require('./src/Messages/MessageReciever'),
+    BaseController = require('./src/base'),
     BaseMessageSender = require('./src/Messages/MessageSender');
 
 dotenv.config();
@@ -26,7 +27,11 @@ try {
     client.on('messageCreate', async (message: any) => {
         if(message.author.bot) return;
         const msg = new BaseMessageReciever(message),
-            sender = new BaseMessageSender(message);
+            sender = new BaseMessageSender(message),
+            voiceChannel = message.member.voice,
+            controller = new BaseController(message, songQueue, voiceChannel);
+
+        if(!voiceChannel) return sender.say('you need to be in a voice channel to use me');
         switch (msg.type) {
             case 'not-valid':
                 sender.say('That is not a valid command');
@@ -34,6 +39,7 @@ try {
                 break;
             case 'play-search':
                 sender.say('Let me work on that for you...');
+                controller.joinChat();
                 console.log('play-search');
                 break;
             case 'play-link':
