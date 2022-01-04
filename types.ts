@@ -1,4 +1,6 @@
 export interface Message {
-    type: string,
-    context: any
+        
+}
+export interface PlaylistUrl {
+    url: String;
 }

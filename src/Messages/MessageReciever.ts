@@ -7,6 +7,9 @@ module.exports = class BaseMessageReciever {
     constructor(
         message: any
     ){
+        this.setupMessage(message)
+    }
+    private setupMessage(message:Object) {
         this.message = message;
 
         let msgArr = this.message.content.split(' '),
@@ -20,5 +23,5 @@ module.exports = class BaseMessageReciever {
             this.args = msgArr.slice(1);
             this.user = this.message.author.username;
         }
-    }
+    } 
 }
