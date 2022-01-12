@@ -8,6 +8,7 @@ const { Client, Intents } = require('discord.js'),
 dotenv.config();
 let serverQueue = new Map(),
 youtubeKey = process.env.YOUTUBE_API_KEY;
+
 //create new client
 const client = new Client({
     intents: [
@@ -37,11 +38,14 @@ try {
         serverQueue = controller.serverQueue;
 
         if(controller.serverQueue){
-            console.log('success')
+            console.log('Server Queue is live');
         }
 
         if(!voiceChannel) return sender.say('you need to be in a voice channel to use me');
         switch (msg.type) {
+            case 'help': 
+                console.log('help');
+                break;
             case 'not-valid':
                 sender.say('That is not a valid command');
                 console.log('not-valid');
@@ -56,6 +60,7 @@ try {
                 //this works - may want to combine join and pars args into one?
                 sender.say('Specific eh... Let me work on that for you.');
                 await controller.joinChat();
+                //TODO: split out parse args to return audio stream - create seprate method for player interaction
                 await controller.parseArgs(msg.args);
                 console.log('play-link');
                 break;
@@ -66,7 +71,11 @@ try {
     })
 
 } catch(err){
-    if(err) console.warn(err);
+    if(err) {
+        throw console.warn(err);
+    } else {
+        console.warn('caught error but no context was found...');
+    }
 }
 
 client.login(process.env.DISCORD_TOKEN)
