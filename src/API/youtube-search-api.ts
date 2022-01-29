@@ -49,11 +49,9 @@ module.exports = class YouTubeRequest {
                     );   
                 return song;
             }); 
-        
         return await details;
     }
     videoRequest = async (searchStr:string) => {
-        console.log(searchStr)
         let reqParams = {
             method: 'GET',
             accept: '*/*',

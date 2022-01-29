@@ -37,7 +37,7 @@ module.exports = class BaseController {
         this.guildId = interaction.guild.id;
         this.searchString = interaction.content;
         if(!serverQueue.length){
-            console.log('fail');
+            console.log('----Initial queue setup----');
             this.setupState();
             serverQueue.set(this.guildId, this.serverQueue);
         } else {
