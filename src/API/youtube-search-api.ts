@@ -49,7 +49,6 @@ module.exports = class YouTubeRequest {
                     );   
                 return song;
             }); 
-        
         return await details;
     }
     videoRequest = async (searchStr:string) => {
@@ -66,10 +65,12 @@ module.exports = class YouTubeRequest {
             }
         }
         const videoId = await axios.request(reqParams).then( (resp:any) => {
-            let songData = resp.data.items[0],
-                songId = songData.id.videoId,
-                songUrl = this.convert_id_to_url(songId);
-                return new Song(songData.snippet.title, songUrl, songData.snippet.thumbnails.default)
+            let responseData = resp.data.items[0], songData = {
+                id: responseData.id.videoId,
+                title: responseData.snippet.title,
+                url: this.convert_id_to_url(responseData.id.videoId)
+            };
+            return new Song(songData)
         }).catch((err:any) => {
             console.warn('------Error in response to song request-------', err);
             return console.warn('there was an issue with your YouTube request...\n I\'d sugest checking your quota')

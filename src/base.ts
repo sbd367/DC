@@ -37,7 +37,7 @@ module.exports = class BaseController {
         this.guildId = interaction.guild.id;
         this.searchString = interaction.content;
         if(!serverQueue.length){
-            console.log('fail');
+            console.log('----Initial queue setup----');
             this.setupState();
             serverQueue.set(this.guildId, this.serverQueue);
         } else {
@@ -87,7 +87,7 @@ module.exports = class BaseController {
                 }  
             }
             let YTRequest = new YouTubeRequest(params);
-            const songData = await YTRequest.videoRequest(),
+            const songData = await YTRequest.videoRequest(searchString),
                 player = createAudioPlayer();
             await songData.getAudioStream();
             const resource = await createAudioResource(songData.streamFile, {
@@ -95,9 +95,8 @@ module.exports = class BaseController {
             });
             this.serverQueue.get(this.guildId).connection.subscribe(player);
             player.play(resource);
-            console.log(songData);
-        }
-    }
+        };
+    };
 
     joinChat(){
         this.serverQueue.get(this.guildId).connection = joinVoiceChannel({
@@ -106,4 +105,4 @@ module.exports = class BaseController {
             adapterCreator: this.voiceChannel.guild.voiceAdapterCreator
         });
     }
-}
+};
