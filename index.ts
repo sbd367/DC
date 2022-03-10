@@ -62,14 +62,25 @@ try {
                 };
                 break;
             case 'play-search' || 'play-link':
-                //for now this path wont get hit
-                sender.say(`${msg.type}`);
+                let sng = await controller.parseArgs(msg.args);
                 await controller.joinChat();
+                if(!currentQueue.songs.length){
+                    currentQueue.songs.push(sng);
+                    await controller.playStream(sng);
+                } else {
+                    currentQueue.songs.push(sng);
+                    let bStr = `Adding: ${sng.title} \nQueue:\n`;
+                    currentQueue.songs.forEach((el:any, ind:any) => {
+                        bStr+=`${ind+1}. ${el.title}\n`;
+                    });
+                    sender.say(bStr);
+                }
+                sender.say(`Playing: ${sng.title}`);
                 break;
             case 'play-link':
                 await controller.joinChat();
                 const song = await controller.parseArgs(msg.args),
-                    songQueue = serverQueue.get(msg.message.guildId).songs;
+                    songQueue = currentQueue.songs;
                 sender.say(`Searching for ${song.title}`);
                 if(!songQueue.length){
                     songQueue.push(song);

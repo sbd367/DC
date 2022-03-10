@@ -110,7 +110,7 @@ module.exports = class BaseController {
                     q: this.searchString
                 }  
             }
-            let YTRequest = new YouTubeRequest(this.searchString);
+            let YTRequest = new YouTubeRequest(params);
             const songData = await YTRequest.videoRequest(this.searchString);
             return songData;
         };
