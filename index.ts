@@ -37,11 +37,13 @@ try {
             voiceChannel = message.member.voice;
 
         if(!message.member.voice.channel) return sender.say('you need to be in a voice channel to use me');
-        console.log(serverQueue);
         const controller = new BaseController(message, serverQueue, voiceChannel);
-        serverQueue = controller.serverQueue;
 
-        if(controller.serverQueue){
+        if(!serverQueue.size){
+            serverQueue = controller.serverQueue;
+        }
+        
+        if(serverQueue){
             console.log('Server Queue is live');
         }
 
@@ -61,22 +63,20 @@ try {
                 console.log('play-search');
                 break;
             case 'play-link':
-                //this works - may want to combine join and pars args into one?
                 sender.say('Specific eh... Let me work on that for you.');
                 await controller.joinChat();
                 //TODO: split out parse args to return audio stream - create seprate method for player interaction
                 const song = await controller.parseArgs(msg.args),
-                    songQueue = controller.serverQueue.get(msg.message.guildId).songs;
-                if(false){
+                    songQueue = serverQueue.get(msg.message.guildId).songs;
+            
+                if(!songQueue.length){
+                    songQueue.push(song);
+                    await controller.playStream(song);
+                } else {
                     songQueue.push(song);
                     sender.say('adding')
-                } else {
-                    try{
-                        await controller.playStream(song);
-                    }catch (e) {
-                        console.log(e)
-                    }
                 }
+                
                 console.log('play-link');
                 break;
             default:

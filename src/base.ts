@@ -49,6 +49,10 @@ module.exports = class BaseController {
         }
         
     }
+    playNextSong = async () => {
+        let newSong = this.serverQueue.get(this.guildId).songs.pop();
+        this.playStream(newSong);
+    }
 
     //Discord player controller - plays audio stream and handles player events
     playStream = async (song:any) => {
@@ -62,12 +66,21 @@ module.exports = class BaseController {
         this.player.play(resource, {
             type: 'opus'
         });
-
+        this.player.on('error', (error:any) => {
+            console.warn(error, 'ERROR: discord player');
+        });
+        this.player.on(AudioPlayerStatus.Idle, () => {
+            let anotherOne = this.serverQueue.get(this.guildId).songs.length;
+            console.log(`IDLE: loading new song = ${anotherOne}`)
+            if(anotherOne){
+                this.playNextSong();
+            }
+        });
         this.player.on(AudioPlayerStatus.Buffering, () => {
             console.log('buffering...');
         });
         this.player.on(AudioPlayerStatus.Playing, () => {
-            console.log('playing song')
+            console.log(`Playing song: ${song.title}`);
         });
     };
 
@@ -78,7 +91,6 @@ module.exports = class BaseController {
 
         if(this.isLink){
             let results = await ytdl.getInfo(args[0]),
-                player = createAudioPlayer(),
                 songData = {
                     title: results.videoDetails.title,
                     url: results.videoDetails.video_url
@@ -86,6 +98,7 @@ module.exports = class BaseController {
             const song = new Song(songData);
             return song;
         } else {
+            //TODO: move params to youtube-search-api.ts
             const params =  {
                 method: 'GET',
                 accept: '*/*',
@@ -105,7 +118,6 @@ module.exports = class BaseController {
     };
 
     joinChat(){
-        console.log(this.voiceChannel)
         this.serverQueue.get(this.guildId).connection = joinVoiceChannel({
             channelId: this.voiceChannel.channelId,
             guildId: this.voiceChannel.guild.id,
