@@ -1,5 +1,4 @@
 import { AudioPlayerStatus, StreamType } from "@discordjs/voice";
-import { GlobalQueue, ServerQueue } from "../types";
 
 const { joinVoiceChannel, 
     getVoiceConnection, 
@@ -40,12 +39,12 @@ module.exports = class BaseController {
         this.voiceChannel = voiceChannel;
         this.guildId = interaction.guild.id;
         this.searchString = interaction.content;
-        if(!serverQueue.length){
+        if(!serverQueue.size){
             console.log('----Initial queue setup----');
             this.setupState();
         } else {
             console.log('----Set active queue----');
-            this.serverQueue = serverQueue.get(interaction.guild.id);
+            this.serverQueue = serverQueue;
         }
         
     }
@@ -111,7 +110,7 @@ module.exports = class BaseController {
                     q: this.searchString
                 }  
             }
-            let YTRequest = new YouTubeRequest(params);
+            let YTRequest = new YouTubeRequest(this.searchString);
             const songData = await YTRequest.videoRequest(this.searchString);
             return songData;
         };

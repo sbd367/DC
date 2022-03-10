@@ -14,7 +14,7 @@ module.exports = class BaseMessageReciever {
 
         let msgArr = this.message.content.split(' '),
             msgType = msgArr[0].replace('>>', ''),
-            isStringSearch = msgArr.length > 1 ? !msgArr[1].includes('youtube.com') || msgArr.length > 2 : msgArr[0] = '';
+            isStringSearch = msgArr.length > 1 ? !msgArr[1].includes('youtube.com') || msgArr.length > 2 : msgArr.join('');
 
         if(!msgArr[0].includes('>>')) this.type = 'not-valid';
         else {
