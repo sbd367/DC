@@ -105,6 +105,7 @@ module.exports = class BaseController {
     };
 
     joinChat(){
+        console.log(this.voiceChannel)
         this.serverQueue.get(this.guildId).connection = joinVoiceChannel({
             channelId: this.voiceChannel.channelId,
             guildId: this.voiceChannel.guild.id,

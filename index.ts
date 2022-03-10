@@ -5,9 +5,11 @@ const { Client, Intents } = require('discord.js'),
     BaseController = require('./src/base'),
     prefix = '>>',
     BaseMessageSender = require('./src/Messages/MessageSender');
-dotenv.config();
+    dotenv.config();
+
 let serverQueue = new Map(),
-youtubeKey = process.env.YOUTUBE_API_KEY;
+    youtubeKey = process.env.YOUTUBE_API_KEY
+    // controller = new BaseController(serverQueue);
 
 //create new client
 const client = new Client({
@@ -33,6 +35,7 @@ try {
         const msg = new BaseMessageReciever(message),
             sender = new BaseMessageSender(message),
             voiceChannel = message.member.voice;
+
         if(!message.member.voice.channel) return sender.say('you need to be in a voice channel to use me');
         console.log(serverQueue);
         const controller = new BaseController(message, serverQueue, voiceChannel);
@@ -62,11 +65,17 @@ try {
                 sender.say('Specific eh... Let me work on that for you.');
                 await controller.joinChat();
                 //TODO: split out parse args to return audio stream - create seprate method for player interaction
-                const song = await controller.parseArgs(msg.args);
-                try{
-                    await controller.playStream(song);
-                }catch (e) {
-                    console.log(e)
+                const song = await controller.parseArgs(msg.args),
+                    songQueue = controller.serverQueue.get(msg.message.guildId).songs;
+                if(false){
+                    songQueue.push(song);
+                    sender.say('adding')
+                } else {
+                    try{
+                        await controller.playStream(song);
+                    }catch (e) {
+                        console.log(e)
+                    }
                 }
                 console.log('play-link');
                 break;
