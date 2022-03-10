@@ -1,4 +1,5 @@
 const ytdl = require('discord-ytdl-core');
+const fs = require('fs');
 module.exports = class Song {
     title: string;
     url: string;
@@ -15,7 +16,8 @@ module.exports = class Song {
         try{
             this.streamFile = await ytdl(this.url, {
                 filter: 'audioonly',
-                opusEncoded: true
+                opusEncoded: true,
+                encoderArgs: ['-af', 'bass=g=10,dynaudnorm=f=200']
             });
         } catch (e) {
             if(e) console.warn(e);

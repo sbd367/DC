@@ -32,16 +32,16 @@ try {
 
         const msg = new BaseMessageReciever(message),
             sender = new BaseMessageSender(message),
-            voiceChannel = message.member.voice,
-            controller = new BaseController(message, serverQueue, voiceChannel);
-
+            voiceChannel = message.member.voice;
+        if(!message.member.voice.channel) return sender.say('you need to be in a voice channel to use me');
+        console.log(serverQueue);
+        const controller = new BaseController(message, serverQueue, voiceChannel);
         serverQueue = controller.serverQueue;
 
         if(controller.serverQueue){
             console.log('Server Queue is live');
         }
 
-        if(!voiceChannel) return sender.say('you need to be in a voice channel to use me');
         switch (msg.type) {
             case 'help': 
                 console.log('help');
@@ -50,10 +50,11 @@ try {
                 sender.say('That is not a valid command');
                 console.log('not-valid');
                 break;
-            case 'play-search':
-                sender.say('Let me work on that for you...');
+            case 'play-search' || 'play-link':
+                //TODO: if there is already a server queue
+                //TODO: split out parse args to return audio stream - create seprate method for player interaction
+                sender.say(`${msg.type}`);
                 await controller.joinChat();
-                await controller.parseArgs(msg.args);
                 console.log('play-search');
                 break;
             case 'play-link':
@@ -61,21 +62,26 @@ try {
                 sender.say('Specific eh... Let me work on that for you.');
                 await controller.joinChat();
                 //TODO: split out parse args to return audio stream - create seprate method for player interaction
-                await controller.parseArgs(msg.args);
+                const song = await controller.parseArgs(msg.args);
+                try{
+                    await controller.playStream(song);
+                }catch (e) {
+                    console.log(e)
+                }
                 console.log('play-link');
                 break;
             default:
-                console.log('default')
+                console.log('default');
                 break;
         }
     })
 
+    client.login(process.env.DISCORD_TOKEN)
+
 } catch(err){
     if(err) {
-        throw console.warn(err);
+        console.warn(err);
     } else {
         console.warn('caught error but no context was found...');
     }
 }
-
-client.login(process.env.DISCORD_TOKEN)
