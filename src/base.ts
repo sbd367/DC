@@ -48,12 +48,14 @@ module.exports = class BaseController {
         }
         
     }
+
+    //Discord player controller - plays audio stream and handles player events.
     playNextSong = async () => {
         let newSong = this.serverQueue.get(this.guildId).songs.pop();
         this.playStream(newSong);
     }
 
-    //Discord player controller - plays audio stream and handles player events
+    //Creates the audio stream then plays the dangol' thing. handles player events too.
     playStream = async (song:any) => {
         await song.getAudioStream();
 
@@ -70,8 +72,9 @@ module.exports = class BaseController {
         });
         this.player.on(AudioPlayerStatus.Idle, () => {
             let anotherOne = this.serverQueue.get(this.guildId).songs.length;
-            console.log(`IDLE: loading new song = ${anotherOne}`)
+            console.log('::IDLE::')
             if(anotherOne){
+                console.log(`Queue size: ${anotherOne}`);
                 this.playNextSong();
             }
         });
@@ -83,7 +86,7 @@ module.exports = class BaseController {
         });
     };
 
-    //Takes arguments given from BaseMessageReciever and makes youtube requests as it should.
+    //Takes arguments given from BaseMessageReciever and makes youtube requests as it should (search string/youtube link).
     parseArgs = async (args:Array<any>) => {
         this.isLink = args[0].includes('youtube.com');
         this.searchString = this.isLink ? '' : args.join(' ');
@@ -110,7 +113,7 @@ module.exports = class BaseController {
                     q: this.searchString
                 }  
             }
-            let YTRequest = new YouTubeRequest(this.searchString);
+            let YTRequest = new YouTubeRequest(params);
             const songData = await YTRequest.videoRequest(this.searchString);
             return songData;
         };
